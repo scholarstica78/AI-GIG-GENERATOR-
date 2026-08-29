@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>The AI Gig Generator: Fast-Close Proposal System</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #0A1F44;
+      --navy-deep: #061530;
+      --navy-tint: #12295C;
+      --gold: #D4AF37;
+      --gold-soft: #E8CD73;
+      --gold-dim: #9C822F;
+      --ivory: #FAF6EF;
+      --ivory-dim: #F0EADA;
+      --ink: #1C2333;
+      --gray: #6B7280;
+      --wine: #4A0E0E;
+      --white: #ffffff;
+      --radius: 16px;
+      --max-width: 1100px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Source Sans 3", sans-serif;
+      background: var(--ivory);
+      color: var(--ink);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: "Fraunces", serif;
+      line-height: 1.15;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: auto;
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(6, 21, 48, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+    }
+
+    .nav-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      color: var(--white);
+      font-family: "Fraunces", serif;
+      font-size: 15px;
+      font-weight: 600;
+      max-width: 480px;
+    }
+
+    .brand span {
+      color: var(--gold);
+    }
+
+    .nav-btn {
+      background: var(--gold);
+      color: var(--navy-deep);
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-weight: 800;
+      transition: .3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(212,175,55,.25);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      min-height: 100vh;
+      padding: 145px 0 80px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 85% 12%, rgba(212,175,55,.20), transparent 32%),
+        linear-gradient(135deg, var(--navy), var(--navy-deep));
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(232,205,115,.35);
+      background: rgba(232,205,115,.08);
+      color: var(--gold-soft);
+      border-radius: 100px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow::first-letter {
+      color: var(--gold);
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 5vw, 68px);
+      margin-bottom: 24px;
+    }
+
+    .gold-text {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-sub {
+      color: #e5e7eb;
+      font-size: 18px;
+      max-width: 650px;
+      margin-bottom: 30px;
+    }
+
+    .hero-sub strong {
+      color: var(--white);
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gold);
+      color: var(--navy-deep);
+      padding: 16px 28px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 17px;
+      transition: .3s ease;
+      box-shadow: 0 12px 35px rgba(212,175,55,.18);
+    }
+
+    .cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(212,175,55,.28);
+    }
+
+    .cta-note {
+      color: var(--gold-soft);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .hero-note {
+      margin-top: 22px;
+      color: #bfc7d8;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 32px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--gold);
+      font-family: "Fraunces", serif;
+      font-size: 24px;
+    }
+
+    .stat span {
+      font-size: 13px;
+      color: #c5ccda;
+    }
+
+    .hero-image {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-image::before {
+      content: "";
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      background: rgba(212,175,55,.18);
+      filter: blur(80px);
+      border-radius: 50%;
+    }
+
+    .hero-image img {
+      position: relative;
+      max-height: 600px;
+      object-fit: contain;
+      transform: rotate(2deg);
+      filter: drop-shadow(0 35px 35px rgba(0,0,0,.35));
+      animation: float 5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(2deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    /* =========================
+       GENERAL SECTIONS
+    ========================= */
+
+    section {
+      padding: 95px 0;
+    }
+
+    .section-label {
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .dark-section .section-label {
+      color: var(--gold-soft);
+    }
+
+    .section-title {
+      font-size: clamp(34px, 4vw, 52px);
+      margin-bottom: 18px;
+    }
+
+    .section-intro {
+      max-width: 700px;
+      color: var(--gray);
+      font-size: 18px;
+      margin-bottom: 45px;
+    }
+
+    .dark-section {
+      background:
+        radial-gradient(circle at 90% 20%, rgba(212,175,55,.08), transparent 30%),
+        var(--navy);
+      color: var(--white);
+    }
+
+    .dark-section .section-intro {
+      color: #c5ccda;
+    }
+
+    /* =========================
+       PROBLEM
+    ========================= */
+
+    .problem {
+      background: var(--ivory);
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .pain-card {
+      background: white;
+      padding: 30px;
+      border-radius: var(--radius);
+      box-shadow: 0 12px 30px rgba(28,35,51,.07);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(212,175,55,.14);
+      color: var(--gold-dim);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+
+    .pain-card h3 {
+      font-size: 23px;
+      margin-bottom: 10px;
+    }
+
+    .pain-card p {
+      color: var(--gray);
+    }
+
+    /* =========================
+       SHIFT
+    ========================= */
+
+    .shift-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .shift-card {
+      padding: 32px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+    }
+
+    .before {
+      border-left: 4px solid var(--wine);
+    }
+
+    .after {
+      border-left: 4px solid var(--gold);
+    }
+
+    .shift-card h3 {
+      color: var(--gold-soft);
+      margin-bottom: 20px;
+      font-size: 27px;
+    }
+
+    .shift-card ul {
+      list-style: none;
+    }
+
+    .shift-card li {
+      margin: 15px 0;
+      color: #d8deea;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .shift-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 25px;
+    }
+
+    .arrow {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--navy);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      font-weight: 900;
+      margin: auto;
+    }
+
+    /* =========================
+       WHAT'S INSIDE
+    ========================= */
+
+    .inside {
+      background: var(--ivory-dim);
+    }
+
+    .book-preview {
+      max-width: 360px;
+      margin: 0 auto 50px;
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,.18));
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(28,35,51,.08);
+    }
+
+    .book-cover {
+      min-height: 180px;
+      background: linear-gradient(145deg, var(--navy), var(--navy-tint));
+      padding: 28px;
+      color: var(--gold-soft);
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .book-cover h3 {
+      font-size: 25px;
+    }
+
+    .book-body {
+      padding: 26px;
+    }
+
+    .book-body p {
+      color: var(--gray);
+      margin-bottom: 20px;
+    }
+
+    .book-body ul {
+      list-style: none;
+    }
+
+    .book-body li {
+      margin: 12px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .book-body li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .bonus {
+      margin-top: 30px;
+      border: 2px dashed var(--gold);
+      padding: 22px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: rgba(212,175,55,.05);
+    }
+
+    .bonus-badge {
+      background: var(--gold);
+      color: var(--navy-deep);
+      font-weight: 900;
+      padding: 8px 13px;
+      border-radius: 7px;
+      white-space: nowrap;
+    }
+
+    /* =========================
+       QUALIFIER
+    ========================= */
+
+    .qualifier {
+      background: var(--ivory);
+    }
+
+    .qualifier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .qualifier-card {
+      padding: 35px;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+    }
+
+    .qualifier-card.no {
+      background: var(--ivory-dim);
+    }
+
+    .qualifier-card h3 {
+      margin-bottom: 22px;
+      font-size: 26px;
+    }
+
+    .qualifier-card ul {
+      list-style: none;
+    }
+
+    .qualifier-card li {
+      margin: 16px 0;
+      padding-left: 32px;
+      position: relative;
+    }
+
+    .yes li::before {
+      content: "✓";
+      color: var(--gold-dim);
+      position: absolute;
+      left: 0;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .no li::before {
+      content: "×";
+      color: var(--wine);
+      position: absolute;
+      left: 0;
+      font-weight: 900;
+      font-size: 22px;
+    }
+
+    /* =========================
+       VALUE STACK
+    ========================= */
+
+    .value-stack {
+      background: var(--ivory);
+    }
+
+    .value-card {
+      max-width: 680px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(28,35,51,.10);
+    }
+
+    .value-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 19px 0;
+      border-bottom: 1px dashed #d7d2c8;
+    }
+
+    .value-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .value-row strong {
+      display: block;
+    }
+
+    .value-row small {
+      color: var(--gray);
+    }
+
+    .value-price {
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .total {
+      text-decoration: line-through;
+      color: var(--gray);
+      font-weight: 800;
+      padding: 22px 0;
+      font-size: 20px;
+    }
+
+    .today {
+      background: var(--navy);
+      color: white;
+      padding: 25px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .today span {
+      color: var(--gold-soft);
+      font-weight: 700;
+    }
+
+    .today strong {
+      color: var(--gold);
+      font-size: 36px;
+      font-family: "Fraunces", serif;
+    }
+
+    .value-caption {
+      max-width: 680px;
+      margin: 25px auto 0;
+      text-align: center;
+      color: var(--gray);
+      font-style: italic;
+    }
+
+    /* =========================
+       TESTIMONIALS
+    ========================= */
+
+    .testimonials {
+      background: var(--navy);
+      color: white;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .testimonial {
+      background: var(--navy-tint);
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    .stars {
+      color: var(--gold);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+
+    .testimonial blockquote {
+      color: #e0e5ef;
+      font-size: 17px;
+      margin-bottom: 22px;
+    }
+
+    .testimonial-author {
+      color: var(--gold-soft);
+      font-weight: 800;
+    }
+
+    /* =========================
+       PRICING
+    ========================= */
+
+    .pricing {
+      background: var(--ivory-dim);
+    }
+
+    .pricing-card {
+      position: relative;
+      max-width: 620px;
+      margin: auto;
+      background: white;
+      padding: 42px;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.12);
+      overflow: hidden;
+    }
+
+    .limited {
+      position: absolute;
+      top: 20px;
+      right: -38px;
+      background: var(--wine);
+      color: white;
+      padding: 7px 45px;
+      transform: rotate(45deg);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pricing-card h3 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .pricing-sub {
+      color: var(--gray);
+      margin-bottom: 25px;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin: 25px 0;
+    }
+
+    .current-price {
+      color: var(--navy);
+      font-family: "Fraunces", serif;
+      font-size: 56px;
+      font-weight: 900;
+    }
+
+    .old-price {
+      color: var(--gray);
+      text-decoration: line-through;
+      font-size: 22px;
+    }
+
+    .pricing-list {
+      list-style: none;
+      margin: 25px 0;
+    }
+
+    .pricing-list li {
+      margin: 13px 0;
+      padding-left: 27px;
+      position: relative;
+    }
+
+    .pricing-list li::before {
+      content: "✓";
+      color: var(--gold-dim);
+      position: absolute;
+      left: 0;
+      font-weight: 900;
+    }
+
+    .full-cta {
+      width: 100%;
+    }
+
+    .urgency {
+      color: var(--wine);
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       FAQ
+    ========================= */
+
+    .faq {
+      background: var(--ivory-dim);
+    }
+
+    .faq-container {
+      max-width: 780px;
+      margin: auto;
+    }
+
+    .faq-item {
+      background: white;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 18px rgba(0,0,0,.04);
+    }
+
+    .faq-question {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: "Source Sans 3", sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .faq-question span {
+      color: var(--gold-dim);
+      font-size: 24px;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease;
+    }
+
+    .faq-answer p {
+      padding: 0 22px 22px;
+      color: var(--gray);
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 250px;
+    }
+
+    /* =========================
+       FINAL CTA
+    ========================= */
+
+    .final-cta {
+      background:
+        radial-gradient(circle at 50% 10%, rgba(212,175,55,.18), transparent 35%),
+        linear-gradient(135deg, var(--navy), var(--navy-deep));
+      color: white;
+      text-align: center;
+    }
+
+    .final-cta h2 {
+      font-size: clamp(38px, 5vw, 58px);
+      margin-bottom: 18px;
+    }
+
+    .final-cta p {
+      max-width: 620px;
+      margin: 0 auto 30px;
+      color: #d4dae5;
+      font-size: 18px;
+    }
+
+    /* =========================
+       AUTHOR
+    ========================= */
+
+    .author {
+      background: var(--navy-deep);
+      color: white;
+      text-align: center;
+    }
+
+    .author img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      margin: 0 auto 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,.3);
+    }
+
+    .author h3 {
+      font-size: 30px;
+      margin-bottom: 7px;
+    }
+
+    .author-role {
+      color: var(--gold-soft);
+      letter-spacing: 3px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      background: #030c1d;
+      color: #7d8799;
+      text-align: center;
+      padding: 28px 15px;
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: var(--gold);
+    }
+
+    /* =========================
+       SCROLL ANIMATION
+    ========================= */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 820px) {
+
+      .nav-inner {
+        min-height: 65px;
+      }
+
+      .brand {
+        font-size: 13px;
+        max-width: 240px;
+      }
+
+      .nav-btn {
+        padding: 9px 13px;
+        font-size: 13px;
+      }
+
+      .hero {
+        padding-top: 120px;
+      }
+
+      .hero-grid,
+      .shift-grid,
+      .qualifier-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-image {
+        order: 2;
+        margin-top: 35px;
+      }
+
+      .hero-image img {
+        max-height: 450px;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+      }
+
+      .books-grid,
+      .testimonial-grid,
+      .pain-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bonus {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      section {
+        padding: 75px 0;
+      }
+
+      .stats {
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 500px) {
+
+      .container {
+        width: 90%;
+      }
+
+      .hero h1 {
+        font-size: 40px;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+      }
+
+      .section-title {
+        font-size: 34px;
+      }
+
+      .pain-card,
+      .qualifier-card,
+      .pricing-card,
+      .value-card {
+        padding: 25px;
+      }
+
+      .current-price {
+        font-size: 45px;
+      }
+
+      .today {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+
+      .brand {
+        max-width: 190px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="navbar">
+  <div class="container nav-inner">
+
+    <div class="brand">
+      The AI Gig Generator:
+      <span>Fast-Close Proposal System</span>
+    </div>
+
+    <a
+      href="https://selar.com/10p0358c15"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="nav-btn">
+      Get Instant Access
+    </a>
+
+  </div>
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+  <div class="container hero-grid">
+
+    <div class="hero-content reveal">
+
+      <div class="eyebrow">
+        ● For Freelance Writers, Designers & Developers
+      </div>
+
+      <h1>
+        Stop Losing Clients to
+        <span class="gold-text">Silence.</span>
+        Start Closing With
+        <span class="gold-text">Confidence.</span>
+      </h1>
+
+      <p class="hero-sub">
+        The complete 3-book system + AI prompt pack that shows you exactly why
+        your proposals go unanswered — and gives you the exact structure,
+        pricing, and 30-day plan to
+        <strong>close more clients, in less time, without chasing anyone.</strong>
+      </p>
+
+      <a
+        href="https://selar.com/10p0358c15"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cta">
+        Get The Full System
+      </a>
+
+      <div class="cta-note">
+        Instant digital download
+      </div>
+
+      <div class="hero-note">
+        3 guides · 40+ pages · AI Prompt Pack included · Lifetime access · Pay in Naira
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+          <strong>6-Part</strong>
+          <span>Proposal Framework</span>
+        </div>
+
+        <div class="stat">
+          <strong>30-Day</strong>
+          <span>Action Plan Included</span>
+        </div>
+
+        <div class="stat">
+          <strong>4</strong>
+          <span>Ready AI Prompts</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="hero-image reveal">
+      <img
+        src="https://res.cloudinary.com/klcstepz/image/upload/v1788014911/file_00000000a4ac8243950d0611c723aefd.png"
+        alt="The AI Gig Generator product mockup">
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     PROBLEM
+========================= -->
+
+<section class="problem">
+  <div class="container reveal">
+
+    <div class="section-label">The Problem</div>
+
+    <h2 class="section-title">
+      You're not losing clients because of your talent.
+    </h2>
+
+    <p class="section-intro">
+      You're losing them in the sixty seconds after they open your proposal.
+      Here's what that's quietly costing you.
+    </p>
+
+    <div class="pain-grid">
+
+      <div class="pain-card">
+        <div class="icon">↻</div>
+        <h3>The endless follow-up loop</h3>
+        <p>
+          You send a great proposal, then spend two weeks refreshing your inbox,
+          drafting and deleting "just checking in" messages.
+        </p>
+      </div>
+
+      <div class="pain-card">
+        <div class="icon">₦</div>
+        <h3>Underpricing out of fear</h3>
+        <p>
+          You lower your rate "just to be safe" — on projects you know you
+          could have charged full price for.
+        </p>
+      </div>
+
+      <div class="pain-card">
+        <div class="icon">↕</div>
+        <h3>The feast-or-famine cycle</h3>
+        <p>
+          A great month is followed by a dry spell, because outreach only
+          happens when panic sets in.
+        </p>
+      </div>
+
+      <div class="pain-card">
+        <div class="icon">!</div>
+        <h3>Proposal dread</h3>
+        <p>
+          Writing a new proposal feels heavier than the actual client work —
+          so you delay sending them at all.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- =========================
+     THE SHIFT
+========================= -->
+
+<section class="dark-section">
+  <div class="container reveal">
+
+    <div class="section-label">The Shift</div>
+
+    <h2 class="section-title">
+      From guessing and waiting, to a system that closes.
+    </h2>
+
+    <div class="shift-grid">
+
+      <div class="shift-card before">
+        <h3>Before</h3>
+
+        <ul>
+          <li>Writing every proposal from scratch, from scratch nerves</li>
+          <li>Pricing based on how anxious you feel that day</li>
+          <li>Following up feels awkward, so you just... don't</li>
+          <li>No idea what your actual close rate even is</li>
+        </ul>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="shift-card after">
+        <h3>After</h3>
+
+        <ul>
+          <li>A reusable 6-part structure you fill in fast</li>
+          <li>Three pre-set pricing tiers, ready to send</li>
+          <li>A simple follow-up sequence, done for you</li>
+          <li>A weekly rhythm that keeps leads flowing in</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     WHAT'S INSIDE
+========================= -->
+
+<section class="inside">
+  <div class="container reveal">
+
+    <div class="section-label">What's Inside</div>
+
+    <h2 class="section-title">
+      Three books. One complete system.
+    </h2>
+
+    <p class="section-intro">
+      Each guide builds on the last — from understanding why proposals fail,
+      to the exact method that works, to a 30-day plan that makes it a habit.
+    </p>
+
+    <img
+      class="book-preview"
+      src="https://res.cloudinary.com/klcstepz/image/upload/v1788014861/file_0000000073848246bb45ba6cfec55df2.png"
+      alt="The AI Gig Generator book cover">
+
+    <div class="books-grid">
+
+      <div class="book-card">
+
+        <div class="book-cover">
+          <h3>Book One —<br>The Silent Deal Breaker</h3>
+        </div>
+
+        <div class="book-body">
+
+          <p>
+            Why talented freelancers keep losing work they deserve.
+          </p>
+
+          <ul>
+            <li>The 5 hidden causes of rejection</li>
+            <li>Myths that are costing you money</li>
+            <li>A self-check to find your starting point</li>
+          </ul>
+
+        </div>
+      </div>
+
+
+      <div class="book-card">
+
+        <div class="book-cover">
+          <h3>Book Two —<br>The Fast-Close Method</h3>
+        </div>
+
+        <div class="book-body">
+
+          <p>
+            The exact structure top freelancers use to get to "yes."
+          </p>
+
+          <ul>
+            <li>The 6-part proposal framework</li>
+            <li>Pricing psychology & tiered offers</li>
+            <li>Contract essentials that protect you</li>
+          </ul>
+
+        </div>
+      </div>
+
+
+      <div class="book-card">
+
+        <div class="book-cover">
+          <h3>Book Three —<br>30 Days to Booked Out</h3>
+        </div>
+
+        <div class="book-body">
+
+          <p>
+            Your action plan for turning the method into momentum.
+          </p>
+
+          <ul>
+            <li>Weekly outreach rhythm</li>
+            <li>The 30-day challenge, week by week</li>
+            <li>Red-flag client screening checklist</li>
+          </ul>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="bonus">
+
+      <div class="bonus-badge">
+        Bonus
+      </div>
+
+      <div>
+        <strong>The AI Prompt Pack</strong>
+
+        <p>
+          4 copy-paste prompts to draft proposals, tailor tone, write
+          follow-ups, and screen leads in minutes — included free inside
+          Book Three.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     IS THIS YOU
+========================= -->
+
+<section class="qualifier">
+  <div class="container reveal">
+
+    <div class="section-label">Is This You?</div>
+
+    <h2 class="section-title">
+      Built for freelancers who are good at the work — and tired of the guesswork.
+    </h2>
+
+    <div class="qualifier-grid">
+
+      <div class="qualifier-card yes">
+
+        <h3>This is for you if —</h3>
+
+        <ul>
+          <li>You're a freelance writer, designer, or developer sending proposals regularly</li>
+          <li>You know your craft, but proposals feel like a guessing game</li>
+          <li>You want a repeatable system, not one more generic template</li>
+          <li>You're ready to follow a 30-day plan, not just read another guide</li>
+        </ul>
+
+      </div>
+
+
+      <div class="qualifier-card no">
+
+        <h3>This isn't for you if —</h3>
+
+        <ul>
+          <li>You're not currently pitching or sending proposals to clients</li>
+          <li>You want a "get rich overnight" shortcut</li>
+          <li>You're not willing to personalize a template — even a good one needs 5 minutes of thought</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     VALUE STACK
+========================= -->
+
+<section class="value-stack">
+  <div class="container reveal">
+
+    <div class="section-label">What You're Really Getting</div>
+
+    <h2 class="section-title">
+      Here's everything on the table — and what it's actually worth.
+    </h2>
+
+    <div class="value-card">
+
+      <div class="value-row">
+        <div>
+          <strong>Book One — The Silent Deal Breaker</strong>
+          <small>Why proposals fail, and how to stop it</small>
+        </div>
+        <div class="value-price">₦8,000</div>
+      </div>
+
+      <div class="value-row">
+        <div>
+          <strong>Book Two — The Fast-Close Method</strong>
+          <small>The 6-part framework + pricing psychology</small>
+        </div>
+        <div class="value-price">₦12,000</div>
+      </div>
+
+      <div class="value-row">
+        <div>
+          <strong>Book Three — 30 Days to Booked Out</strong>
+          <small>Your full action plan and weekly rhythm</small>
+        </div>
+        <div class="value-price">₦10,000</div>
+      </div>
+
+      <div class="value-row">
+        <div>
+          <strong>Bonus: The AI Prompt Pack</strong>
+          <small>4 ready prompts to draft proposals in minutes</small>
+        </div>
+        <div class="value-price">₦7,000</div>
+      </div>
+
+      <div class="total">
+        Total Real Value: ₦37,000
+      </div>
+
+      <div class="today">
+        <span>Your Price Today</span>
+        <strong>₦5,000</strong>
+      </div>
+
+    </div>
+
+    <p class="value-caption">
+      This isn't a discount for the sake of a discount. It's a launch price
+      for freelancers who move now — while it's still this low.
+    </p>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     TESTIMONIALS
+========================= -->
+
+<section class="testimonials dark-section">
+  <div class="container reveal">
+
+    <div class="section-label">What Freelancers Say</div>
+
+    <h2 class="section-title">
+      Real feedback from real freelancers.
+    </h2>
+
+    <p class="section-intro">
+      Here's what people are saying after going through the system.
+    </p>
+
+    <div class="testimonial-grid">
+
+      <div class="testimonial">
+
+        <div class="stars">★★★★★</div>
+
+        <blockquote>
+          "The Fast-Close Method made proposals easier and clearer. The 30 Days
+          to Booked Out section gave me a practical plan to follow. Simple,
+          actionable, and highly recommended for freelancers."
+        </blockquote>
+
+        <div class="testimonial-author">
+          — Fidelis, Graphic Designer
+        </div>
+
+      </div>
+
+
+      <div class="testimonial">
+
+        <div class="stars">★★★★★</div>
+
+        <blockquote>
+          "Concise, practical, and straight to the point. The three-part
+          structure makes it easy to apply. Highly recommended for writing
+          better proposals and winning clients."
+        </blockquote>
+
+        <div class="testimonial-author">
+          — Nkiru Clifford, Lecturer
+        </div>
+
+      </div>
+
+
+      <div class="testimonial">
+
+        <div class="stars">★★★★★</div>
+
+        <blockquote>
+          "Practical, simple, and easy to follow. The proposal framework
+          completely changed my approach. Highly recommended for winning
+          more clients."
+        </blockquote>
+
+        <div class="testimonial-author">
+          — Prinye Brown, Maths Statistician
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     PRICING
+========================= -->
+
+<section class="pricing" id="pricing">
+  <div class="container reveal">
+
+    <div class="section-label">Get Instant Access</div>
+
+    <h2 class="section-title">
+      One system. Every proposal, from here on.
+    </h2>
+
+    <div class="pricing-card">
+
+      <div class="limited">Limited</div>
+
+      <h3>
+        The AI Gig Generator: Fast-Close Proposal System
+      </h3>
+
+      <p class="pricing-sub">
+        3 complete guides + the AI Prompt Pack
+      </p>
+
+      <div class="price-row">
+        <div class="current-price">₦5,000</div>
+        <div class="old-price">₦15,000</div>
+      </div>
+
+      <ul class="pricing-list">
+        <li>Book One — The Silent Deal Breaker</li>
+        <li>Book Two — The Fast-Close Method</li>
+        <li>Book Three — 30 Days to Booked Out</li>
+        <li>Bonus: The AI Prompt Pack</li>
+        <li>Instant download, lifetime access</li>
+      </ul>
+
+      <a
+        href="https://selar.com/10p0358c15"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cta full-cta">
+        Get Instant Access Now
+      </a>
+
+      <div class="urgency">
+        ⏳ Launch price ends soon — returns to ₦15,000
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     FAQ
+========================= -->
+
+<section class="faq">
+  <div class="container faq-container reveal">
+
+    <div class="section-label">Questions</div>
+
+    <h2 class="section-title">
+      Before you get started.
+    </h2>
+
+
+    <div class="faq-item">
+
+      <button class="faq-question">
+        What exactly do I get?
+        <span>+</span>
+      </button>
+
+      <div class="faq-answer">
+        <p>
+          Three digital guides (PDF/HTML format) plus the AI Prompt Pack bonus —
+          all delivered as an instant download after purchase.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="faq-item">
+
+      <button class="faq-question">
+        I'm not a designer or developer — will this still work for me?
+        <span>+</span>
+      </button>
+
+      <div class="faq-answer">
+        <p>
+          Yes. The framework is built for any freelancer who sends proposals —
+          writers, designers, developers, marketers, and consultants alike.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="faq-item">
+
+      <button class="faq-question">
+        Do I need any special software?
+        <span>+</span>
+      </button>
+
+      <div class="faq-answer">
+        <p>
+          No. Everything opens in your browser or PDF reader. The AI prompts
+          work with any AI assistant you already use.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="faq-item">
+
+      <button class="faq-question">
+        How fast will I see this pay off?
+        <span>+</span>
+      </button>
+
+      <div class="faq-answer">
+        <p>
+          Most freelancers can apply the 6-part structure to their very next
+          proposal — same day. The system is built for immediate use, not a
+          long study period.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     FINAL CTA
+========================= -->
+
+<section class="final-cta">
+  <div class="container reveal">
+
+    <h2>
+      You're one proposal away from a "yes."
+    </h2>
+
+    <p>
+      Get the complete system today and send your next proposal with a
+      structure that actually converts.
+    </p>
+
+    <a
+      href="https://selar.com/10p0358c15"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="cta">
+      Get The Full System Now
+    </a>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     AUTHOR
+========================= -->
+
+<section class="author">
+  <div class="container reveal">
+
+    <img
+      src="https://res.cloudinary.com/klcstepz/image/upload/v1788014092/author-photo-1.png"
+      alt="Nkiru Okpala">
+
+    <h3>Nkiru Okpala</h3>
+
+    <div class="author-role">
+      CREATOR, THE AI GIG GENERATOR
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+  The AI Gig Generator: Fast-Close Proposal System · by
+  <strong>Nkiru Okpala</strong>
+</footer>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+  /* FAQ ACCORDION */
+
+  const faqItems = document.querySelectorAll(".faq-item");
+
+  faqItems.forEach(item => {
+
+    const question = item.querySelector(".faq-question");
+
+    question.addEventListener("click", () => {
+
+      const isActive = item.classList.contains("active");
+
+      faqItems.forEach(otherItem => {
+        otherItem.classList.remove("active");
+
+        const icon = otherItem.querySelector(".faq-question span");
+
+        if (icon) {
+          icon.textContent = "+";
+        }
+      });
+
+      if (!isActive) {
+
+        item.classList.add("active");
+
+        const icon = item.querySelector(".faq-question span");
+
+        if (icon) {
+          icon.textContent = "−";
+        }
+
+      }
+
+    });
+
+  });
+
+
+  /* SCROLL REVEAL */
+
+  const revealElements = document.querySelectorAll(".reveal");
+
+  const observer = new IntersectionObserver(
+
+    entries => {
+
+      entries.forEach(entry => {
+
+        if (entry.isIntersecting) {
+
+          entry.target.classList.add("visible");
+
+          observer.unobserve(entry.target);
+
+        }
+
+      });
+
+    },
+
+    {
+      threshold: 0.12
+    }
+
+  );
+
+
+  revealElements.forEach(element => {
+    observer.observe(element);
+  });
+
+</script>
+
+</body>
+</html>
